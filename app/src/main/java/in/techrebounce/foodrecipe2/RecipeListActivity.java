@@ -2,6 +2,8 @@ package in.techrebounce.foodrecipe2;
 
 import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -18,27 +20,36 @@ import in.techrebounce.foodrecipe2.requests.ServiceGenerator;
 import in.techrebounce.foodrecipe2.requests.responses.RecipeResponse;
 import in.techrebounce.foodrecipe2.requests.responses.RecipeSearchResponse;
 import in.techrebounce.foodrecipe2.util.Constant;
+import in.techrebounce.foodrecipe2.viewmodels.RecipeListViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RecipeListActivity extends BaseActivity {
     private static final String TAG = "RecipeListActivity";
+    private RecipeListViewModel mRecipeListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
 
-        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+        mRecipeListViewModel = new ViewModelProvider(this).get(RecipeListViewModel.class);
+
+        subscribeObservers();
+
+    }
+
+    private void subscribeObservers() {
+        mRecipeListViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
             @Override
-            public void onClick(View v) {
-                testRetrofitRequest();
+            public void onChanged(List<Recipe> recipes) {
+
             }
         });
     }
 
-    private void testRetrofitRequest() {
+/*    private void testRetrofitRequest() {
         RecipeApi recipeApi = ServiceGenerator.getRecipeApi();
 
         Call<RecipeSearchResponse> responseCall = recipeApi.searchRecipe(
@@ -74,9 +85,9 @@ public class RecipeListActivity extends BaseActivity {
             }
         });
 
-    }
+    }*/
 
-    private void testRetrofitRequest1() {
+   /* private void testRetrofitRequest1() {
         RecipeApi recipeApi = ServiceGenerator.getRecipeApi();
 
         Call<RecipeResponse> responseCall = recipeApi.getRecipe(
@@ -91,7 +102,7 @@ public class RecipeListActivity extends BaseActivity {
                 if(response.code() == 200) {
                     Log.d(TAG, "onResponse: server response " + response.body().toString());
                     Recipe recipe = response.body().getRecipe();
-                    Log.d(TAG, "onResponse: RETRIEVED RECIPE"+ recipe.toString());
+                    Log.d(TAG, "onResponse: RETRIEVED RECIPE "+ recipe.toString());
                 } else {
                     try {
                         Log.d(TAG, "onResponse: " + response.errorBody().string());
@@ -108,5 +119,5 @@ public class RecipeListActivity extends BaseActivity {
             }
         });
 
-    }
+    }*/
 }
