@@ -40,7 +40,7 @@ public class RecipeApiClient {
         return mRecipes;
     }
 
-    public void searchRecipeApi(String query, int pageNumber) {
+    public void searchRecipesApi(String query, int pageNumber) {
         if(mRetrieveRecipesRunnable != null) {
             mRetrieveRecipesRunnable = null;
         }
