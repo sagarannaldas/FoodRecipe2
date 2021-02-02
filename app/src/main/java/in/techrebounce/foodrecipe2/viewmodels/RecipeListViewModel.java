@@ -12,6 +12,7 @@ import in.techrebounce.foodrecipe2.repositories.RecipeRepository;
 public class RecipeListViewModel extends ViewModel {
 
     private RecipeRepository mRecipeRepository;
+    private boolean mIsViewingRecipes;
 
     public RecipeListViewModel() {
         mRecipeRepository = RecipeRepository.getInstance();
@@ -24,4 +25,13 @@ public class RecipeListViewModel extends ViewModel {
     public void searchRecipesApi(String query, int pageNumber) {
         mRecipeRepository.searchRecipesApi(query,pageNumber);
     }
+
+    public boolean isViewingRecipes() {
+        return mIsViewingRecipes;
+    }
+
+    public void setIsViewingRecipes(boolean isViewingRecipes){
+        mIsViewingRecipes = isViewingRecipes;
+    }
+
 }

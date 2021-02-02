@@ -7,6 +7,21 @@ public class Constant {
     public static final int NETWORK_TIME_OUT = 10000;
 
     public static final String API_KEY = "";
+    public static final String[] DEFAULT_SEARCH_CATEGORIES =
+            {"Barbeque", "Breakfast", "Chicken", "Beef", "Brunch", "Dinner", "Wine", "Italian"};
+
+    public static final String[] DEFAULT_SEARCH_CATEGORY_IMAGES =
+            {
+                    "barbeque",
+                    "breakfast",
+                    "chicken",
+                    "beef",
+                    "brunch",
+                    "dinner",
+                    "wine",
+                    "italian"
+            };
+
 
 
 }
