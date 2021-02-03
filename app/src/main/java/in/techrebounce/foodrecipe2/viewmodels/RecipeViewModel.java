@@ -10,13 +10,19 @@ public class RecipeViewModel extends ViewModel {
 
     private RecipeRepository mRecipeRepository;
     private String mRecipeId;
+    private boolean mDidRetreivedRecipe;
 
     public RecipeViewModel() {
         mRecipeRepository = RecipeRepository.getInstance();
+        mDidRetreivedRecipe = false;
     }
 
     public LiveData<Recipe> getRecipe() {
         return mRecipeRepository.getRecipe();
+    }
+
+    public LiveData<Boolean> isRecipeRequestTimedOut() {
+        return mRecipeRepository.isRecipeRequestTimedOut();
     }
 
     public void searchRecipeById(String recipeId){
@@ -26,5 +32,13 @@ public class RecipeViewModel extends ViewModel {
 
     public String getRecipeId() {
         return mRecipeId;
+    }
+
+    public void setRetreivedRecipe(boolean retreivedRecipe) {
+        mDidRetreivedRecipe = retreivedRecipe;
+    }
+
+    public boolean didRetrievedRecipe() {
+        return mDidRetreivedRecipe;
     }
 }

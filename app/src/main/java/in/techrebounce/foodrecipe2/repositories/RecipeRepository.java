@@ -1,7 +1,9 @@
 package in.techrebounce.foodrecipe2.repositories;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import java.util.List;
 
@@ -14,6 +16,8 @@ public class RecipeRepository {
     private RecipeApiClient mRecipeApiClient;
     private String mQuery;
     private int mPageNumber;
+    private MutableLiveData<Boolean> mIsQueryExhausted = new MutableLiveData<>();
+    private MediatorLiveData<List<Recipe>> mRecipes = new MediatorLiveData<>();
 
     public static RecipeRepository getInstance() {
         if(instance == null) {
@@ -24,14 +28,49 @@ public class RecipeRepository {
 
     private RecipeRepository() {
         mRecipeApiClient = RecipeApiClient.getInstance();
+        initMediators();
+    }
+
+    private void initMediators() {
+        LiveData<List<Recipe>>  recipeListApiSource = mRecipeApiClient.getRecipes();
+        mRecipes.addSource(recipeListApiSource, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(List<Recipe> recipes) {
+                if(recipes != null) {
+                    mRecipes.setValue(recipes);
+                    doneQuery(recipes);
+                } else {
+                    //search data base cache
+                    doneQuery(null);
+                }
+            }
+        });
+    }
+
+    private void doneQuery(List<Recipe> list) {
+        if(list != null) {
+            if(list.size() % 30 != 0) {
+                mIsQueryExhausted.setValue(true);
+            }
+        } else {
+            mIsQueryExhausted.setValue(true);
+        }
+    }
+
+    public LiveData<Boolean> isQueryExhausted() {
+        return mIsQueryExhausted;
     }
 
     public LiveData<List<Recipe>> getRecipes() {
-        return mRecipeApiClient.getRecipes();
+        return mRecipes;
     }
 
     public LiveData<Recipe> getRecipe() {
         return mRecipeApiClient.getRecipe();
+    }
+
+    public LiveData<Boolean> isRecipeRequestTimedOut() {
+        return mRecipeApiClient.isRecipeRequestTimedOut();
     }
 
     public void searchRecipesApi(String query, int pageNumber) {
@@ -40,6 +79,7 @@ public class RecipeRepository {
         }
         mQuery = query;
         mPageNumber = pageNumber;
+        mIsQueryExhausted.setValue(false);
         mRecipeApiClient.searchRecipesApi(query,pageNumber);
     }
 
