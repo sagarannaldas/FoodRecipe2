@@ -2,6 +2,8 @@ package in.techrebounce.foodrecipe2;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -10,6 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import in.techrebounce.foodrecipe2.models.Recipe;
 import in.techrebounce.foodrecipe2.viewmodels.RecipeListViewModel;
@@ -37,6 +42,8 @@ public class RecipeActivity extends BaseActivity {
 
         mRecipeViewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
 
+
+        showProgressBar(true);
         subscribeObservers();
         getIncomingIntent();
     }
@@ -54,14 +61,43 @@ public class RecipeActivity extends BaseActivity {
             @Override
             public void onChanged(Recipe recipe) {
                 if(recipe != null) {
-                    Log.d(TAG, "onChanged: --------------------------------------");
-                    Log.d(TAG, "onChanged: " + recipe.getTitle());
-
-                    for(String ingredient: recipe.getIngredients()) {
-                        Log.d(TAG, "onChanged: ingredients > "+ ingredient);
-                    }
+                    setRecipeProperties(recipe);
                 }
             }
         });
     }
+
+     private void setRecipeProperties(Recipe recipe) {
+        if(recipe != null) {
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.drawable.ic_launcher_background);
+
+            Glide.with(this)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(recipe.getImage_url())
+                    .into(mAppCompatImageView);
+
+            mRecipeTitle.setText(recipe.getTitle());
+            mRecipeRank.setText(String.valueOf(Math.round(recipe.getSocial_rank())));
+
+            mRecipeIndegredientsContainer.removeAllViews();
+
+            for(String ingredient : recipe.getIngredients()) {
+                TextView textView = new TextView(this);
+                textView.setText(ingredient);
+                textView.setTextSize(15);
+                textView.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ));
+                mRecipeIndegredientsContainer.addView(textView);
+            }
+        }
+        showParent();
+        showProgressBar(false);
+     }
+
+     private void showParent() {
+        mScrollView.setVisibility(View.VISIBLE);
+     }
+
 }
